@@ -1,0 +1,88 @@
+<% extend('../layouts/dashboard-layout') %>
+<div class="row justify-content-center">
+  <div class="col-md-6">
+    <% if(hasMsg) { %>
+      <div class="alert alert-warning" role="alert">
+        <%- messages %>
+      </div>
+    <% } %>
+
+    
+
+    <div class="btn-group w-100">
+      <a href="/dashboard/archives?status=public" class="btn btn-outline-secondary w-100 rounded-0
+    <% if(status === 'public') { %>active<% } %>">已發佈</a>
+      <a href="/dashboard/archives?status=draft" class="btn btn-outline-secondary w-100 rounded-0
+      <% if(status === 'draft') { %>active<% } %>">草稿</a>
+      <a href="/dashboard/article/create" class="btn btn-primary">新增文章</a>
+    </div>
+
+    <% for(item in articles) { %>
+      <div class="card my-3">
+        <h4 class="card-header">
+          <%- articles[item].title %>
+        </h4>
+        <div class="card-body">
+          <%- striptags(articles[item].content).slice(0, 150) %>...
+          <div>
+            <span class="fa fa-clock-o"></span> 
+            <%- moment(articles[item].update_time * 1000).format('YYYY/MM/DD') %>
+            <span class="fa fa-folder-open-o"></span>
+            <span>
+              <%- categories[articles[item].category].name %>
+            </span>
+          </div>
+        </div>
+        <div class="card-footer p-0 btn-group">
+          <a href="#" class="btn btn-outline-danger rounded-0 deletePost" data-id="<%- articles[item].id %>" data-title="<%- articles[item].title %>">刪除</a>
+          <a href="/dashboard/article/<%- articles[item].id %>" class="btn btn-outline-secondary w-100 rounded-0">編輯</a>
+          
+          <a href="#" target="_blank" class="btn btn-outline-secondary w-100 rounded-0">預覽</a>
+          
+        </div>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<nav class="my-5" aria-label="Page navigation example">
+  <ul class="pagination justify-content-center">
+    <li class="page-item disabled">
+      <a class="page-link" href="/dashboard/archives" tabindex="-1">Previous</a>
+    </li>
+    
+      <li class="page-item active"> 
+        <a class="page-link" href="/dashboard/archives">
+          1
+        </a>
+      </li>
+    
+      <li class="page-item "> 
+        <a class="page-link" href="/dashboard/archives">
+          2
+        </a>
+      </li>
+    
+    <li class="page-item ">
+      <a class="page-link" href="/dashboard/archives">Next</a>
+    </li>
+  </ul>
+</nav>
+
+<script>
+  $(document).ready(function () {
+    $('.deletePost').on('click', function(e) {
+      e.preventDefault();
+      var id = $(this).data('id');
+      var title = $(this).data('title');
+      if(confirm(`確認是否刪除${title}`)) {
+        $.ajax({
+          url: `/dashboard/archives/remove/${id}`,
+          method: 'POST'
+        }).done(function(res) {
+          window.location = '/dashboard/archives'
+        })
+      }
+    })
+  });
+</script>

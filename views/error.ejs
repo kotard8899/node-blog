@@ -1,3 +1,6 @@
-<h1><%= message %></h1>
-<h2><%= error.status %></h2>
-<pre><%= error.stack %></pre>
+<% extend('./layouts/layout') %>
+<% if(title == undefined) {
+  var title = '找無此頁';
+} %>
+<h1 class="my-4"><%- title %></h1>
+<a href="/">回到首頁</a>

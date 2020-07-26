@@ -1,11 +1,43 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-  </head>
-  <body>
-    <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
-  </body>
-</html>
+<% extend('./layouts/layout') %>
+<div class="row my-4 justify-content-center">
+  <div class="col-md-9">
+    <% for(let item in articles) {%>
+      <div class="card mb-3">
+        <div class="card-body">
+          <a href="/post/<%- articles[item].id %>"> <h2 class="text-primary"><%- articles[item].title %></h2></a>
+          <div class="d-flex flex-row text-secondary small">
+            <div class="p-2"><span class="fa fa-clock-o"></span>
+              <%- moment(articles[item].update_time * 1000).format('YYYY/MM/DD') %></div>
+            <div class="p-2"><i class="fa fa-tag" aria-hidden="true"></i> 
+              <a href="#" class="text-info">
+                <%- categories[articles[item].category].name %>
+              </a>
+            </div>
+          </div>
+          <div>
+            <%- striptags(articles[item].content).slice(0, 150) %>...
+          </div>
+        </div>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+
+<nav class="my-5" aria-label="Page navigation example">
+  <ul class="pagination justify-content-center">
+    <li class="page-item <% if(!pages.hasPre) { %>disabled<% } %>">
+      <a class="page-link" href="/?page=<%- pages.currentPage - 1 %>" tabindex="-1">Previous</a>
+    </li>
+    <% for(let i=1;i<=pages.totalPages;i++) { %>
+      <li class="page-item <% if(i == pages.currentPage) { %>active<% } %>"> 
+        <a class="page-link" href="/?page=<%- i %>">
+          <%- i %>
+        </a>
+      </li>
+    <% } %>
+    <li class="page-item <% if(!pages.hasNext) { %>disabled<% } %>">
+      <a class="page-link" href="/?page=<%- pages.currentPage + 1 %>">Next</a>
+    </li>
+  </ul>
+</nav>
