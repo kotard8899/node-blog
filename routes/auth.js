@@ -55,9 +55,9 @@ router.post('/login', (req,res) => {
   })
 });
 
-router.post('/signout', function(req, res) {
+router.post('/signout', (req, res) => {
   firebaseClient.auth().signOut();
-  req.session.destroy(function(err) {
+  req.session.destroy((err) => {
     if(err){
       console.log(err);
     }else{
