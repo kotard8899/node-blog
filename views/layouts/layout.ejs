@@ -35,7 +35,10 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
       <div class="navbar-nav ml-auto">
-          <a class="nav-item nav-link" href="#">心得 <span class="sr-only">(current)</span></a>
+        <% var categories = categories || {} %>
+        <% for(let item in categories) { %>
+          <a class="nav-item nav-link" href="/<%- categories[item].path %>"><%- categories[item].name %></a>
+        <% } %>
       </div>
     </div>
   </nav>
