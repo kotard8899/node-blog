@@ -46,7 +46,7 @@ router.post('/login', (req,res) => {
   .then((user) => {
     req.session.uid = user.user.uid;
     req.session.mail = user.user.email;
-    res.redirect('/dashboard/archives');
+    res.redirect('/dashboard/home');
   })
   .catch((error) => {
     const errorMessage = error.message;

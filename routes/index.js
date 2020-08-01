@@ -3,6 +3,7 @@ const router = express.Router();
 const firebaseAdminDb = require('../connections/firebase_admin');
 const categoriesRef = firebaseAdminDb.ref('categories');
 const articlesRef = firebaseAdminDb.ref('articles');
+const countersRef = firebaseAdminDb.ref('counters');
 const striptags = require('striptags');
 const moment = require('moment');
 const convertPagination = require('../modules/convertPagination');
@@ -11,6 +12,14 @@ const convertPagination = require('../modules/convertPagination');
 router.get('/', function(req, res, next) {
   let articles = [];
   let pages = {};
+  //部落格點閱次數
+  countersRef.child('blogViews').once('value').then((snapshot) => {
+    let blogViews = snapshot.val();
+    blogViews += 1;
+    countersRef.update({blogViews});
+  });
+
+
   articlesRef.orderByChild('update_time').once('value').then((snapshot) => {
     snapshot.forEach((child) => {
       if(child.val().status === 'public') {
@@ -69,45 +78,11 @@ router.get('/:category', function(req, res, next) {
       categories,
       moment,
       striptags,
-      pages
+      pages,
+      categoryPath
     });
   })
 })
-// router.get('/:category', function(req, res, next) {
-//   let articles = [];
-//   let pages = {};
-//   const categoryPath = req.param('category') || '';
-//   console.log({categoryPath})
-//   let categoryId = '';
-//   articlesRef.orderByChild('update_time').once('value').then((snapshot) => {
-//     snapshot.forEach((child) => {
-//       if(child.val().status === 'public') {
-//         articles.push(child.val());
-//       }
-//     })
-//     articles.reverse();
-//     return categoriesRef.once('value');
-//   }).then((snapshot) => {
-//     const categories = snapshot.val();
-//     //pagination
-//     ({articles, pages} = convertPagination(articles, req.query.page));
-//     //過濾種類文章
-//     if(categoryPath) {
-//       snapshot.forEach((child) => {
-//         if(child.val().path === categoryPath) {
-//           categoryId = child.val().id;
-//         }
-//       })
-//     }
-//     res.render('index', { 
-//       articles,
-//       categories,
-//       moment,
-//       striptags,
-//       pages
-//     });
-//   })
-// });
 
 router.get('/post/:id', function(req, res, next) {
   const id = req.param('id');
@@ -118,7 +93,16 @@ router.get('/post/:id', function(req, res, next) {
       return res.render('error', {
         title: '找不到該文章'
       })
-    }
+    };
+    
+    //部落格點閱次數
+    countersRef.child(article.category).once('value').then((snapshot) => {
+      let views = snapshot.val();
+      views += 1;
+      const data = {} 
+      data[article.category] = views;
+      countersRef.update(data);
+    });
     return categoriesRef.once('value');
   }).then((snapshot) => {
     const categories = snapshot.val();

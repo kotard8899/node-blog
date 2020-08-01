@@ -1,4 +1,6 @@
-
+<% if(categoryPath === undefined) {
+  var categoryPath = '';
+} %>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -37,7 +39,7 @@
       <div class="navbar-nav ml-auto">
         <% var categories = categories || {} %>
         <% for(let item in categories) { %>
-          <a class="nav-item nav-link" href="/<%- categories[item].path %>"><%- categories[item].name %></a>
+          <a class="nav-item nav-link <% if(categoryPath === categories[item].path) { %>active<% } %>" href="/<%- categories[item].path %>"><%- categories[item].name %></a>
         <% } %>
       </div>
     </div>

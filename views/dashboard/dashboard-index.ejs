@@ -1,0 +1,27 @@
+<% extend('../layouts/dashboard-layout') %>
+<div class="container">
+  <h1 class="my-4">部落格點閱次數： <%- counters['blogViews'] %></h1>
+  <hr>
+  <h3 class="my-4">文章分類</h3>
+  <div class="row">
+    <% for(let item in categories) { %>
+      <div class="col-md-4 mt-4">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">
+              <%- categories[item].name %>
+            </h5>
+            <div class="card-text">
+              <% var data = articles.filter((article) => article.category === item)  %>
+              
+              <h3><span class="h4">文章總數：</span>  <%- data.length %></h3>
+            </div>
+            <div class="card-text">
+              <h3><span class="h4">總觀看數：</span> <%- counters[item]%></h3>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% } %>
+  </div>
+</div>

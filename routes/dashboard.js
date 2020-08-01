@@ -3,9 +3,33 @@ const router = express.Router();
 const firebaseAdminDb = require('../connections/firebase_admin');
 const categoriesRef = firebaseAdminDb.ref('categories');
 const articlesRef = firebaseAdminDb.ref('articles');
+const countersRef = firebaseAdminDb.ref('counters');
 const striptags = require('striptags');
 const moment = require('moment');
 
+router.get('/home', (req, res) => {
+  let categories = {};
+  let counters = {}
+  categoriesRef.once('value').then((snapshot) => {
+    categories = snapshot.val()
+    return countersRef.once('value');
+  }).then((snapshot) => {
+    counters = snapshot.val();
+    return articlesRef.once('value');
+  }).then((snapshot) => {
+    const articles = [];
+    snapshot.forEach((child) => { 
+      if(child.val().status === 'public'){
+        articles.push(child.val()) 
+      }
+    })
+    res.render('dashboard/dashboard-index', {
+      categories,
+      counters,
+      articles
+    })
+  })
+});
 router.get('/archives', (req, res) => {
   let articles = [];
   let status = req.query.status || 'public';
@@ -79,6 +103,9 @@ router.post('/categories/create',(req, res) => {
     } else {
       categoryRef.set(JSON.parse(JSON.stringify(data))).then((snapshot) => {
         res.redirect('/dashboard/categories');
+        const newGenre = {} 
+        newGenre[data.id] = 0;
+        countersRef.update(newGenre);
       })
     }
   })
@@ -86,6 +113,7 @@ router.post('/categories/create',(req, res) => {
 router.post('/categories/remove/:id',(req, res) => {
   const id = req.param('id')
   categoriesRef.child(id).remove();
+  countersRef.child(id).remove();
   req.flash('messages', '路徑已刪除');
   res.redirect('/dashboard/categories');
 });

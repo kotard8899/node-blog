@@ -1,6 +1,10 @@
 <% extend('./layouts/layout') %>
 <div class="row my-4 justify-content-center">
   <div class="col-md-9">
+    <% if(articles.length === 0) {%>
+      <h1>該分類沒有文章</h1>
+      <a href="/">回到首頁</a>
+    <% } %>
     <% for(let item in articles) {%>
       <div class="card mb-3">
         <div class="card-body">
