@@ -20,6 +20,6 @@
     "http-errors": "~1.6.3",
     "moment": "^2.27.0",
     "morgan": "~1.9.1",
-    "striptags": "^3.1.1"
+    "striptags": "^3.2.0"
   }
 }
